@@ -23,9 +23,9 @@ Brown Safety Hub allows users to quickly submit incident reports with clear cont
 ## What this project does NOT do
 
 - Does **not** contact real emergency services
-- Does **not** store reports in a database
 - Does **not** perform AI analysis or automated decision-making
-- Does **not** integrate with official Brown University systems
+- Does **not** yet integrate with official Brown University systems
+- Does **not** yet store reports in a database
 
 This is a **prototype UI only**.
 
