@@ -22,7 +22,7 @@ const Hub: React.FC<HubProps> = ({ onReportClick }) => {
       <main className="px-6 pb-32">
         {/* Welcome */}
         <div className="mt-4 mb-8">
-          <h2 className="text-3xl font-extrabold text-[#0f172a] mb-3 leading-tight">Good Evening,<br/>Student</h2>
+          <h2 className="text-3xl font-extrabold text-[#0f172a] mb-3 leading-tight">Welcome,<br/>Jenny</h2>
           <div className="flex items-center gap-2 text-sm text-[#0f172a] bg-gray-50 w-fit px-3 py-1.5 rounded-full border border-gray-200">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
