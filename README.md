@@ -1,20 +1,92 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Brown Safety Hub
 
-# Run and deploy your AI Studio app
+A lightweight, student-facing safety reporting interface designed for campus use.
 
-This contains everything you need to run your app locally.
+Brown Safety Hub allows users to quickly submit incident reports with clear context (type, location, confidence, urgency) through a clean, mobile-first UI. This project is currently a **frontend prototype**, focused on usability and reporting flow rather than backend integration.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1Fnb4ni7Di8ArLzLqSQMXt7pfN2N2ozok
+---
 
-## Run Locally
+## What this project does
 
-**Prerequisites:**  Node.js
+- Provides a simple interface for submitting safety or incident reports
+- Captures:
+  - Incident type
+  - Location
+  - Description
+  - Confidence level
+  - Urgency flag
+- Shows a clear submission and success flow
+- Optimized for clarity and speed during stressful situations
 
+---
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## What this project does NOT do
+
+- Does **not** contact real emergency services
+- Does **not** store reports in a database
+- Does **not** perform AI analysis or automated decision-making
+- Does **not** integrate with official Brown University systems
+
+This is a **prototype UI only**.
+
+---
+
+## Tech stack
+
+- React + TypeScript
+- Vite
+- Tailwind CSS
+
+No backend. No external APIs required.
+
+---
+
+## Project structure (high level)
+
+```
+src/
+├── components/
+│   ├── Hub.tsx
+│   ├── ReportForm.tsx
+│   ├── LiveMap.tsx
+│   └── History.tsx
+├── App.tsx
+├── index.tsx
+├── constants.tsx
+└── types.ts
+```
+
+---
+
+## Run locally
+
+**Prerequisites:** Node.js
+
+```bash
+npm install
+npm run dev
+```
+
+Open the local URL shown by Vite (usually `http://localhost:5173`).
+
+---
+
+## Project status
+
+This is an **early-stage frontend prototype** exploring:
+- UX design for campus safety reporting
+- Information clarity under pressure
+- Mobile-first interface design
+
+Potential future directions may include:
+- Backend persistence
+- Authentication
+- Integration with campus safety infrastructure
+
+---
+
+## Disclaimer
+
+This project is **not an official Brown University product** and is **not connected to real emergency or safety services**.
+
+It is a student-built prototype for exploration and demonstration purposes only.
