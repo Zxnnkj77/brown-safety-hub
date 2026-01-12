@@ -1,0 +1,8 @@
+{
+  "name": "Brown University Safety Hub",
+  "description": "A comprehensive situational awareness and emergency response application for campus safety.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
