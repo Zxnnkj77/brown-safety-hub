@@ -9,7 +9,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, onSuccess }) => {
   const [incidentType, setIncidentType] = useState('Select incident type');
   const [location, setLocation] = useState('130 Waterman St, Providence, RI');
   const [description, setDescription] = useState('');
-  const [confidence, setConfidence] = useState(8);
+  const [confidence, setConfidence] = useState(5);
   const [isUrgent, setIsUrgent] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -51,9 +51,31 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, onSuccess }) => {
               <select
                 value={incidentType}
                 onChange={(e) => setIncidentType(e.target.value)}
-                className="block w-full pl-4 pr-10 py-3 text-base border-none rounded-xl bg-gray-100 text-[#0f172a] focus:ring-2 focus:ring-[#be0909] shadow-sm appearance-none transition-shadow"
+                className="
+                  block w-full
+                  pl-4 pr-12 py-3
+                  text-base
+                  border-none
+                  rounded-xl
+                  bg-gray-100
+                  text-[#0f172a]
+                  focus:ring-2 focus:ring-[#be0909]
+                  shadow-sm
+                  transition-shadow
+
+                  appearance-none
+                  bg-none
+                  [-webkit-appearance:none]
+                  [-moz-appearance:none]
+                "
+                style={{
+                  WebkitAppearance: "none",
+                  MozAppearance: "none",
+                  appearance: "none",
+                  backgroundImage: "none",
+                }}
               >
-                <option>Select incident type</option>
+                <option value="">Select incident type</option>
                 <option>Medical Emergency</option>
                 <option>Fire</option>
                 <option>Accident</option>
@@ -61,10 +83,12 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, onSuccess }) => {
                 <option>Suspicious Activity</option>
                 <option>Other</option>
               </select>
+
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
                 <span className="material-symbols-outlined">expand_more</span>
               </div>
             </div>
+
           </div>
 
           {/* Location */}
