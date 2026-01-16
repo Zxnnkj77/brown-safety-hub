@@ -22,7 +22,7 @@ const Hub: React.FC<HubProps> = ({ onReportClick }) => {
       <main className="px-6 pb-32">
         {/* Welcome */}
         <div className="mt-4 mb-8">
-          <h2 className="text-3xl font-extrabold text-[#0f172a] mb-3 leading-tight">Welcome,<br/>Jenny</h2>
+          <h2 className="text-3xl font-extrabold text-[#0f172a] mb-3 leading-tight">Welcome,<br />Jenny</h2>
           <div className="flex items-center gap-2 text-sm text-[#0f172a] bg-gray-50 w-fit px-3 py-1.5 rounded-full border border-gray-200">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -35,7 +35,7 @@ const Hub: React.FC<HubProps> = ({ onReportClick }) => {
         {/* Emergency Button */}
         <div className="mb-10 relative group">
           <div className="absolute -inset-0.5 bg-[#be0909]/20 rounded-2xl blur-sm opacity-50"></div>
-          <button 
+          <button
             onClick={onReportClick}
             className="relative w-full bg-[#be0909] active:scale-[0.98] transition-transform duration-100 flex flex-col items-center justify-center py-8 px-6 rounded-2xl shadow-[0_0_20px_-5px_rgba(190,9,9,0.4)] overflow-hidden"
           >
@@ -45,7 +45,7 @@ const Hub: React.FC<HubProps> = ({ onReportClick }) => {
                 <span className="material-symbols-outlined text-white text-[32px]">warning</span>
               </div>
               <h3 className="text-2xl font-black text-white tracking-wider uppercase mb-1">Report Emergency</h3>
-              <p className="text-white text-sm font-medium text-center max-w-[260px] opacity-95">Tap to connect with Brown DPS immediately.<br/>Location shared automatically.</p>
+              <p className="text-white text-sm font-medium text-center max-w-[260px] opacity-95">Tap to connect with Brown DPS immediately.<br />Location shared automatically.</p>
             </div>
           </button>
         </div>
@@ -72,41 +72,88 @@ const Hub: React.FC<HubProps> = ({ onReportClick }) => {
             </div>
           </div>
         </div>
-
         {/* Services */}
         <div className="mb-6">
-          <h4 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">Services</h4>
+          <h4 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">
+            Services
+          </h4>
+
           <div className="grid grid-cols-2 gap-4">
-            <button className="bg-white p-5 rounded-xl border border-gray-100 flex flex-col items-start hover:shadow-md transition-all">
+            {/* Campus Police */}
+            <a
+              href="https://publicsafety.brown.edu/about/staff-directory"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white p-5 rounded-xl border border-gray-100 flex flex-col items-start hover:shadow-md transition-all"
+            >
               <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center mb-3 text-blue-600">
                 <span className="material-symbols-outlined">local_police</span>
               </div>
-              <span className="font-bold text-[#0f172a] text-left leading-tight text-base">Campus Police</span>
-              <span className="text-xs text-gray-500 mt-1 text-left font-medium">Non-emergency</span>
-            </button>
-            <button className="bg-white p-5 rounded-xl border border-gray-100 flex flex-col items-start hover:shadow-md transition-all">
+              <span className="font-bold text-[#0f172a] text-left leading-tight text-base">
+                Campus Police
+              </span>
+              <span className="text-xs text-gray-500 mt-1 text-left font-medium">
+                Non-emergency
+              </span>
+            </a>
+
+            {/* Health Services */}
+            <a
+              href="https://healthservices.brown.edu/appointments"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white p-5 rounded-xl border border-gray-100 flex flex-col items-start hover:shadow-md transition-all"
+            >
               <div className="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center mb-3 text-red-600">
                 <span className="material-symbols-outlined">medical_services</span>
               </div>
-              <span className="font-bold text-[#0f172a] text-left leading-tight text-base">Health Services</span>
-              <span className="text-xs text-gray-500 mt-1 text-left font-medium">Book appt</span>
-            </button>
-            <button className="bg-white p-5 rounded-xl border border-gray-100 flex flex-col items-start hover:shadow-md transition-all">
+              <span className="font-bold text-[#0f172a] text-left leading-tight text-base">
+                Health Services
+              </span>
+              <span className="text-xs text-gray-500 mt-1 text-left font-medium">
+                Book appt
+              </span>
+            </a>
+
+            {/* Safe Walk */}
+            <a
+              href="https://publicsafety.brown.edu/programsservices/safewalk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white p-5 rounded-xl border border-gray-100 flex flex-col items-start hover:shadow-md transition-all"
+            >
               <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center mb-3 text-purple-600">
                 <span className="material-symbols-outlined">directions_walk</span>
               </div>
-              <span className="font-bold text-[#0f172a] text-left leading-tight text-base">Safe Walk</span>
-              <span className="text-xs text-gray-500 mt-1 text-left font-medium">Request escort</span>
-            </button>
-            <button className="bg-white p-5 rounded-xl border border-gray-100 flex flex-col items-start hover:shadow-md transition-all">
+              <span className="font-bold text-[#0f172a] text-left leading-tight text-base">
+                Safe Walk
+              </span>
+              <span className="text-xs text-gray-500 mt-1 text-left font-medium">
+                Request escort
+              </span>
+            </a>
+
+            {/* Mental Health */}
+            <a
+              href="https://caps.brown.edu/about-us/contact-us"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white p-5 rounded-xl border border-gray-100 flex flex-col items-start hover:shadow-md transition-all"
+            >
               <div className="w-10 h-10 rounded-lg bg-teal-50 flex items-center justify-center mb-3 text-teal-600">
                 <span className="material-symbols-outlined">psychology</span>
               </div>
-              <span className="font-bold text-[#0f172a] text-left leading-tight text-base">Mental Health</span>
-              <span className="text-xs text-gray-500 mt-1 text-left font-medium">24/7 Support</span>
-            </button>
+              <span className="font-bold text-[#0f172a] text-left leading-tight text-base">
+                Mental Health
+              </span>
+              <span className="text-xs text-gray-500 mt-1 text-left font-medium">
+                24/7 Support
+              </span>
+            </a>
           </div>
         </div>
+
+
       </main>
     </div>
   );
