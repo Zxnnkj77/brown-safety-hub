@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
-import Layout from './components/Layout';
-import Hub from './components/Hub';
-import LiveMap from './components/LiveMap';
-import History from './components/History';
+import Layout from "./components/Layout";
+import Hub from "./screens/Hub";
+import LiveMap from "./screens/LiveMap";
+import History from "./screens/History";
 import ReportForm from './components/ReportForm';
 import { TabType } from './types';
 
