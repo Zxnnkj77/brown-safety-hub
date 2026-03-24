@@ -1,28 +1,40 @@
 import React, { useState } from 'react';
+import { submitReport } from '../api';
 
 interface ReportFormProps {
   onBack: () => void;
-  onSuccess: (data: any) => void;
+  onSuccess: () => void;
 }
 
 const ReportForm: React.FC<ReportFormProps> = ({ onBack, onSuccess }) => {
-  const [incidentType, setIncidentType] = useState('Select incident type');
+  const [incidentType, setIncidentType] = useState('');
   const [location, setLocation] = useState('130 Waterman St, Providence, RI');
   const [description, setDescription] = useState('');
   const [confidence, setConfidence] = useState(5);
   const [isUrgent, setIsUrgent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!description || incidentType === 'Select incident type') return;
+    if (!description || !incidentType) return;
 
-    onSuccess({
-      type: incidentType,
-      location,
-      description,
-      confidence,
-      isUrgent,
-    });
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      await submitReport({
+        incident_type: incidentType,
+        location_text: location,
+        description,
+        confidence_level: confidence,
+        urgency: isUrgent,
+      });
+      onSuccess();
+    } catch (err: any) {
+      setError(err.message || 'Failed to submit report');
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -42,6 +54,14 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, onSuccess }) => {
 
       <div className="flex-1 overflow-y-auto no-scrollbar px-6 py-6 pb-40">
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Error message */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2">
+              <span className="material-symbols-outlined text-lg">error</span>
+              {error}
+            </div>
+          )}
+
           {/* Incident Type */}
           <div className="space-y-2">
             <label className="block text-sm font-bold text-gray-500 uppercase tracking-wide">
@@ -211,28 +231,25 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, onSuccess }) => {
         </form>
       </div>
 
-      {/* Floating Action Button */}
+      {/* Floating Submit Button */}
       <div className="absolute bottom-[100px] left-0 right-0 px-6 z-20">
         <button
-          type="submit"
-          form="" // not needed; kept empty intentionally
-          onClick={() => {
-            // no-op: submit is handled by the form button below via type="submit"
-          }}
-          className="hidden"
-        />
-        <button
-          type="submit"
-          onClick={(e) => {
-            // This ensures submit works even if button is outside the <form> visually
-            // (Because it's absolutely positioned). We manually call handleSubmit.
-            handleSubmit(e as unknown as React.FormEvent);
-          }}
-          disabled={!description || incidentType === 'Select incident type'}
+          type="button"
+          onClick={(e) => handleSubmit(e as unknown as React.FormEvent)}
+          disabled={!description || !incidentType || submitting}
           className="w-full bg-[#be0909] text-white font-black uppercase tracking-wider py-4 rounded-xl shadow-lg shadow-[#be0909]/30 active:scale-[0.98] transition-all flex items-center justify-center space-x-2 disabled:opacity-50 disabled:active:scale-100"
         >
-          <span>Submit Report</span>
-          <span className="material-symbols-outlined text-sm material-symbols-fill">send</span>
+          {submitting ? (
+            <>
+              <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></div>
+              <span>Submitting...</span>
+            </>
+          ) : (
+            <>
+              <span>Submit Report</span>
+              <span className="material-symbols-outlined text-sm material-symbols-fill">send</span>
+            </>
+          )}
         </button>
       </div>
 

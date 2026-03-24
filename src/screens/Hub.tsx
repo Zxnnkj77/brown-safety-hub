@@ -1,11 +1,28 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { fetchPublicAlerts, PublicAlert } from '../api';
 
 interface HubProps {
   onReportClick: () => void;
 }
 
 const Hub: React.FC<HubProps> = ({ onReportClick }) => {
+  const [alerts, setAlerts] = useState<PublicAlert[]>([]);
+
+  useEffect(() => {
+    fetchPublicAlerts()
+      .then(setAlerts)
+      .catch(err => console.error('Failed to load alerts:', err));
+  }, []);
+
+  const latestAlert = alerts[0] ?? null;
+
+  const levelColors: Record<string, { border: string; icon: string; badge: string; badgeText: string }> = {
+    info: { border: 'border-l-blue-500', icon: 'text-blue-500', badge: 'bg-blue-50 text-blue-700 border-blue-100', badgeText: 'Info' },
+    warning: { border: 'border-l-yellow-500', icon: 'text-yellow-500', badge: 'bg-yellow-50 text-yellow-700 border-yellow-100', badgeText: 'Warning' },
+    critical: { border: 'border-l-red-500', icon: 'text-red-500', badge: 'bg-red-50 text-red-700 border-red-100', badgeText: 'Critical' },
+  };
+
   return (
     <div className="h-full flex flex-col overflow-y-auto no-scrollbar bg-white">
       {/* Header - Increased z-index to stay on top of scrolling elements */}
@@ -45,7 +62,7 @@ const Hub: React.FC<HubProps> = ({ onReportClick }) => {
                 <span className="material-symbols-outlined text-white text-[32px]">warning</span>
               </div>
               <h3 className="text-2xl font-black text-white tracking-wider uppercase mb-1">Report Emergency</h3>
-              <p className="text-white text-sm font-medium text-center max-w-[260px] opacity-95">Tap to connect with Brown DPS immediately.<br />Location shared automatically.</p>
+              <p className="text-white text-sm font-medium text-center max-w-[260px] opacity-95">Submit a safety report to campus staff.<br />Your location can be shared.</p>
             </div>
           </button>
         </div>
@@ -56,21 +73,35 @@ const Hub: React.FC<HubProps> = ({ onReportClick }) => {
             <h4 className="text-sm font-bold uppercase tracking-wider text-gray-500">Official Alerts</h4>
             <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded border border-gray-200">Live Feed</span>
           </div>
-          <div className="bg-white border border-gray-100 border-l-4 border-l-yellow-500 rounded-lg shadow-sm p-5 relative overflow-hidden">
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 mt-0.5">
-                <span className="material-symbols-outlined text-yellow-500 material-symbols-fill">notifications_active</span>
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between items-start mb-1.5">
-                  <h5 className="font-bold text-[#0f172a] text-base">Safewalk Advisory</h5>
-                  <span className="text-[10px] font-bold bg-yellow-50 text-yellow-700 px-2 py-1 rounded uppercase tracking-wide border border-yellow-100">Verified</span>
+          {latestAlert ? (() => {
+            const colors = levelColors[latestAlert.level] || levelColors.info;
+            return (
+              <div className={`bg-white border border-gray-100 border-l-4 ${colors.border} rounded-lg shadow-sm p-5 relative overflow-hidden`}>
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 mt-0.5">
+                    <span className={`material-symbols-outlined ${colors.icon} material-symbols-fill`}>notifications_active</span>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start mb-1.5">
+                      <h5 className="font-bold text-[#0f172a] text-base">{latestAlert.title}</h5>
+                      {latestAlert.verified && (
+                        <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide border ${colors.badge}`}>Verified</span>
+                      )}
+                    </div>
+                    <p className="text-sm text-[#0f172a]/80 leading-relaxed mb-3 font-medium">{latestAlert.message}</p>
+                    <p className="text-xs text-gray-400 font-medium">
+                      Updated: {new Date(latestAlert.updated_at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-sm text-[#0f172a]/80 leading-relaxed mb-3 font-medium">Heavy snow accumulation on Thayer St. sidewalks. Maintenance crews are deployed.</p>
-                <p className="text-xs text-gray-400 font-medium">Updated: 12 mins ago</p>
               </div>
+            );
+          })() : (
+            <div className="bg-gray-50 border border-gray-100 rounded-lg p-5 text-center">
+              <span className="material-symbols-outlined text-gray-300 text-3xl mb-2">notifications_off</span>
+              <p className="text-sm text-gray-400 font-medium">No active alerts</p>
             </div>
-          </div>
+          )}
         </div>
         {/* Services */}
         <div className="mb-6">

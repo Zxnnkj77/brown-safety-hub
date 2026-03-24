@@ -9,24 +9,8 @@ import { TabType } from './types';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('hub');
-  // Initialize with an empty array as requested - reports will only appear after submission
-  const [historyItems, setHistoryItems] = useState<any[]>([]);
-
-  const addReportToHistory = (report: any) => {
-    const newItem = {
-      id: `u-${Date.now()}`,
-      title: report.type,
-      subtitle: report.description,
-      status: 'Investigated',
-      date: 'Just now',
-      icon: 'report',
-      color: 'bg-orange-500',
-      border: 'border-orange-100',
-      statusBg: 'bg-orange-50',
-      statusText: 'text-orange-600'
-    };
-    setHistoryItems(prev => [newItem, ...prev]);
-  };
+  // Key used to signal History to refetch after a new report submission
+  const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -35,13 +19,13 @@ const App: React.FC = () => {
       case 'map':
         return <LiveMap />;
       case 'history':
-        return <History reports={historyItems} />;
+        return <History refreshKey={historyRefreshKey} />;
       case 'report':
         return (
           <ReportForm 
             onBack={() => setActiveTab('hub')} 
-            onSuccess={(reportData) => {
-              addReportToHistory(reportData);
+            onSuccess={() => {
+              setHistoryRefreshKey(k => k + 1);
               setActiveTab('history');
             }}
           />

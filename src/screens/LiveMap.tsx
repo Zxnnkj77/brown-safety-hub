@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import { fetchPublicIncidents, fetchSafeLocations, PublicIncident, SafeLocation } from '../api';
 
 // Fix for default marker icons in Leaflet with React
 const DefaultIcon = L.icon({
@@ -19,6 +20,14 @@ const createPulseIcon = (size: number) => L.divIcon({
   iconAnchor: [size / 2, size / 2]
 });
 
+// Green icon for safe locations
+const safeLocationIcon = L.divIcon({
+  className: '',
+  html: '<div style="background:#10b981;border:2px solid white;border-radius:50%;width:14px;height:14px;box-shadow:0 0 0 3px rgba(16,185,129,0.3);"></div>',
+  iconSize: [14, 14],
+  iconAnchor: [7, 7]
+});
+
 // Component to handle zoom programmatically
 const MapController = ({ zoomLevel }: { zoomLevel: number }) => {
   const map = useMap();
@@ -28,9 +37,34 @@ const MapController = ({ zoomLevel }: { zoomLevel: number }) => {
   return null;
 };
 
+const SEVERITY_SIZE: Record<string, number> = {
+  critical: 20,
+  high: 16,
+  medium: 12,
+  low: 10,
+};
+
+const SEVERITY_LABEL: Record<string, { text: string; className: string }> = {
+  critical: { text: 'Critical', className: 'text-[var(--alert-red)] bg-red-50' },
+  high: { text: 'High Risk', className: 'text-[var(--alert-red)] bg-red-50' },
+  medium: { text: 'Medium', className: 'text-[var(--alert-yellow)] bg-yellow-50' },
+  low: { text: 'Low', className: 'text-green-600 bg-green-50' },
+};
+
 const LiveMap: React.FC = () => {
   const [zoom, setZoom] = useState(16);
   const center: [number, number] = [41.8268, -71.4025]; // Brown University center
+  const [incidents, setIncidents] = useState<PublicIncident[]>([]);
+  const [safeLocations, setSafeLocations] = useState<SafeLocation[]>([]);
+
+  useEffect(() => {
+    fetchPublicIncidents()
+      .then(setIncidents)
+      .catch(err => console.error('Failed to load incidents:', err));
+    fetchSafeLocations()
+      .then(setSafeLocations)
+      .catch(err => console.error('Failed to load safe locations:', err));
+  }, []);
 
   const handleZoomIn = () => setZoom(prev => Math.min(prev + 1, 19));
   const handleZoomOut = () => setZoom(prev => Math.max(prev - 1, 12));
@@ -65,10 +99,23 @@ const LiveMap: React.FC = () => {
           />
           <MapController zoomLevel={zoom} />
           
-          {/* Mock Incident Markers */}
-          <Marker position={[41.8265, -71.4030]} icon={createPulseIcon(16)} />
-          <Marker position={[41.8280, -71.4010]} icon={createPulseIcon(12)} />
-          <Marker position={[41.8250, -71.4050]} icon={createPulseIcon(14)} />
+          {/* Public incident markers */}
+          {incidents.map(incident => (
+            <Marker
+              key={incident.id}
+              position={[incident.latitude, incident.longitude]}
+              icon={createPulseIcon(SEVERITY_SIZE[incident.severity] || 14)}
+            />
+          ))}
+
+          {/* Safe location markers */}
+          {safeLocations.map(loc => (
+            <Marker
+              key={loc.id}
+              position={[loc.latitude, loc.longitude]}
+              icon={safeLocationIcon}
+            />
+          ))}
         </MapContainer>
 
         {/* Map Control Buttons */}
@@ -105,24 +152,24 @@ const LiveMap: React.FC = () => {
           <div className="grid grid-cols-2 gap-4 mb-8">
             <div className="bg-white p-4 rounded-2xl border border-[var(--ios-card-border)] shadow-sm">
               <div className="flex justify-between items-start mb-2">
-                <p className="text-[var(--ios-muted)] text-[10px] font-bold uppercase tracking-wider">Active Alerts</p>
+                <p className="text-[var(--ios-muted)] text-[10px] font-bold uppercase tracking-wider">Active Incidents</p>
                 <span className="material-symbols-outlined text-gray-400 text-lg">warning</span>
               </div>
-              <h3 className="text-3xl font-bold text-[var(--navy-blue)]">3</h3>
-              <div className="mt-2 flex items-center text-[10px] font-semibold text-[var(--alert-red)]">
-                <span className="material-symbols-outlined text-xs mr-1">trending_up</span>
-                <span>+2 increased</span>
+              <h3 className="text-3xl font-bold text-[var(--navy-blue)]">{incidents.length}</h3>
+              <div className="mt-2 flex items-center text-[10px] font-semibold text-gray-500">
+                <span className="material-symbols-outlined text-xs mr-1">info</span>
+                <span>Verified incidents</span>
               </div>
             </div>
             <div className="bg-white p-4 rounded-2xl border border-[var(--ios-card-border)] shadow-sm">
               <div className="flex justify-between items-start mb-2">
-                <p className="text-[var(--ios-muted)] text-[10px] font-bold uppercase tracking-wider">Patrols Active</p>
-                <span className="material-symbols-outlined text-gray-400 text-lg">security</span>
+                <p className="text-[var(--ios-muted)] text-[10px] font-bold uppercase tracking-wider">Safe Locations</p>
+                <span className="material-symbols-outlined text-gray-400 text-lg">shield</span>
               </div>
-              <h3 className="text-3xl font-bold text-[var(--navy-blue)]">12</h3>
+              <h3 className="text-3xl font-bold text-[var(--navy-blue)]">{safeLocations.length}</h3>
               <div className="mt-2 flex items-center text-[10px] font-semibold text-green-600">
                 <span className="material-symbols-outlined text-xs mr-1">check_circle</span>
-                <span>Optimal Coverage</span>
+                <span>Curated locations</span>
               </div>
             </div>
           </div>
@@ -130,37 +177,48 @@ const LiveMap: React.FC = () => {
           {/* Incident List */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-[var(--navy-blue)]">Emerging Incidents</h2>
-              <button className="text-xs font-semibold text-[var(--navy-blue)] bg-blue-50 px-2 py-1 rounded-md">View All</button>
+              <h2 className="text-lg font-bold text-[var(--navy-blue)]">Active Incidents</h2>
             </div>
             
             <div className="bg-white rounded-2xl p-1 space-y-3">
-              <div className="p-4 rounded-xl border border-gray-100 hover:border-gray-200 transition-colors shadow-sm">
-                <div className="flex justify-between items-start mb-3">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0 text-[var(--alert-red)]">
-                      <span className="material-symbols-outlined text-lg">campaign</span>
-                    </div>
-                    <div>
-                      <span className="text-sm font-bold text-[var(--navy-blue)] block leading-tight mb-0.5">Loud Sounds Reported</span>
-                      <span className="text-xs text-[var(--ios-muted)] flex items-center gap-1">
-                        <span className="material-symbols-outlined text-[10px]">location_on</span>
-                        Science Library • 4 Reports
-                      </span>
-                    </div>
-                  </div>
-                  <span className="text-[10px] font-extrabold text-[var(--alert-red)] bg-red-50 px-2 py-1 rounded-full uppercase tracking-tight">High Risk</span>
+              {incidents.length === 0 ? (
+                <div className="p-6 text-center">
+                  <span className="material-symbols-outlined text-gray-300 text-3xl">check_circle</span>
+                  <p className="text-sm text-gray-400 font-medium mt-2">No active incidents</p>
                 </div>
-                <div className="space-y-1">
-                  <div className="flex justify-between text-[10px] font-medium text-gray-500">
-                    <span>Confidence Level</span>
-                    <span>85%</span>
-                  </div>
-                  <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
-                    <div className="bg-[var(--alert-red)] h-1.5 rounded-full shadow-[0_0_10px_rgba(239,68,68,0.5)]" style={{ width: '85%' }}></div>
-                  </div>
-                </div>
-              </div>
+              ) : (
+                incidents.map(incident => {
+                  const sev = SEVERITY_LABEL[incident.severity] || SEVERITY_LABEL.medium;
+                  return (
+                    <div key={incident.id} className="p-4 rounded-xl border border-gray-100 hover:border-gray-200 transition-colors shadow-sm">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex items-start gap-3">
+                          <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0 text-[var(--alert-red)]">
+                            <span className="material-symbols-outlined text-lg">campaign</span>
+                          </div>
+                          <div>
+                            <span className="text-sm font-bold text-[var(--navy-blue)] block leading-tight mb-0.5">{incident.title}</span>
+                            <span className="text-xs text-[var(--ios-muted)] flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[10px]">location_on</span>
+                              {incident.public_message.slice(0, 50)}{incident.public_message.length > 50 ? '...' : ''} • {incident.report_count} Report{incident.report_count !== 1 ? 's' : ''}
+                            </span>
+                          </div>
+                        </div>
+                        <span className={`text-[10px] font-extrabold px-2 py-1 rounded-full uppercase tracking-tight ${sev.className}`}>{sev.text}</span>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-[10px] font-medium text-gray-500">
+                          <span>Confidence Level</span>
+                          <span>{incident.confidence_percent}%</span>
+                        </div>
+                        <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                          <div className="bg-[var(--alert-red)] h-1.5 rounded-full shadow-[0_0_10px_rgba(239,68,68,0.5)]" style={{ width: `${incident.confidence_percent}%` }}></div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         </div>
