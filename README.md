@@ -70,11 +70,11 @@ cd ..
 
 ```env
 SUPABASE_URL=https://<your-project>.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
+SUPABASE_SERVICE_ROLE_KEY=sb_secret_<your-secret-key>
 PORT=3001
 ```
 
-Find these values in your Supabase project under **Settings > API**.
+Find these values in your Supabase project under **Settings > API Keys**. Use a backend-only **secret** key (`sb_secret_...`) or legacy `service_role` key. Do not use a publishable key (`sb_publishable_...`) here; publishable keys are for client-side code and will not work for this Express API.
 
 **Frontend** -- create `.env.local` (project root):
 
@@ -128,7 +128,7 @@ The frontend runs at `http://localhost:3000`.
 | Variable                  | Location      | Description                                                  |
 | ------------------------- | ------------- | ------------------------------------------------------------ |
 | `SUPABASE_URL`            | `server/.env` | Your Supabase project URL                                    |
-| `SUPABASE_SERVICE_ROLE_KEY` | `server/.env` | Service role key (full DB access, bypasses RLS)             |
+| `SUPABASE_SERVICE_ROLE_KEY` | `server/.env` | Secret/service role key (full DB access, bypasses RLS)      |
 | `PORT`                    | `server/.env` | Backend port (default: `3001`)                               |
 | `VITE_API_URL`            | `.env.local`  | API base URL for frontend (leave empty for local dev proxy)  |
 
@@ -136,4 +136,5 @@ The frontend runs at `http://localhost:3000`.
 
 - **Do not commit `.env` or `.env.local`** -- both are in `.gitignore`.
 - **Keep `SUPABASE_SERVICE_ROLE_KEY` private.** This key bypasses Row Level Security and has full database access. It must only be used server-side.
+- **Do not use `sb_publishable_...` in `SUPABASE_SERVICE_ROLE_KEY`.** The server validates this on startup and exits with a clear error if a public key is configured.
 - Example env files are provided: `server/.env.example` and `.env.local.example`.
