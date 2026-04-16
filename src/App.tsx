@@ -1,5 +1,7 @@
 
 import React, { useState } from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import AdminApp from './admin/AdminApp';
 import Layout from "./components/Layout";
 import Hub from "./screens/Hub";
 import LiveMap from "./screens/LiveMap";
@@ -7,7 +9,7 @@ import History from "./screens/History";
 import ReportForm from './components/ReportForm';
 import { TabType } from './types';
 
-const App: React.FC = () => {
+const StudentApp: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('hub');
   // Key used to signal History to refetch after a new report submission
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
@@ -51,5 +53,14 @@ const App: React.FC = () => {
     </div>
   );
 };
+
+const App: React.FC = () => (
+  <BrowserRouter>
+    <Routes>
+      <Route path="/admin/*" element={<AdminApp />} />
+      <Route path="*" element={<StudentApp />} />
+    </Routes>
+  </BrowserRouter>
+);
 
 export default App;

@@ -62,6 +62,8 @@ export const createAlertSchema = z.object({
   linked_incident_id: z.string().uuid().nullable().optional(),
 });
 
+export const updateAlertSchema = createAlertSchema.partial();
+
 // ─── Admin: create safe location ─────────────────────────────────────────────
 
 export const createSafeLocationSchema = z.object({
@@ -72,3 +74,5 @@ export const createSafeLocationSchema = z.object({
   category: z.enum(['building', 'service', 'emergency', 'shelter', 'other']),
   is_active: z.boolean().default(true),
 });
+
+export const updateSafeLocationSchema = createSafeLocationSchema.partial();
